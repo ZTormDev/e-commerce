@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -10,6 +12,8 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
+import { useAuth } from "@/lib/context/AuthContext";
+import toast from "react-hot-toast";
 
 const navigation = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
@@ -25,6 +29,39 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { isAuthenticated, isAdmin, logout, user } = useAuth();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      toast.error("Please login to access admin panel");
+      router.push("/auth/login");
+    } else if (!isAdmin) {
+      toast.error("Access denied. Admin privileges required.");
+      router.push("/");
+    }
+  }, [isAuthenticated, isAdmin, router]);
+
+  const handleLogout = () => {
+    logout();
+    toast.success("Logged out successfully");
+    router.push("/");
+  };
+
+  if (!isAuthenticated || !isAdmin) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            Verifying Access...
+          </h2>
+          <p className="text-gray-600">
+            Please wait while we verify your credentials.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -55,7 +92,10 @@ export default function AdminLayout({
             </nav>
           </div>
           <div className="absolute bottom-0 w-64 p-6 border-t border-gray-800">
-            <button className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:text-white transition-colors">
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:text-white transition-colors w-full"
+            >
               <LogOut size={20} />
               Logout
             </button>
@@ -79,7 +119,7 @@ export default function AdminLayout({
                     View Store
                   </Link>
                   <div className="w-10 h-10 bg-primary-600 rounded-full flex items-center justify-center text-white font-semibold">
-                    A
+                    {user?.name.charAt(0).toUpperCase()}
                   </div>
                 </div>
               </div>

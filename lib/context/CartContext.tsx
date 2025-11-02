@@ -28,14 +28,17 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   // Load cart from localStorage on mount
   useEffect(() => {
     setIsClient(true);
-    const savedCart = localStorage.getItem("cart");
-    if (savedCart) {
-      try {
+    try {
+      const savedCart = localStorage.getItem("cart");
+      if (savedCart && savedCart.trim() !== "") {
         const parsed = JSON.parse(savedCart);
-        setItems(parsed);
-      } catch (error) {
-        console.error("Error loading cart:", error);
+        if (Array.isArray(parsed)) {
+          setItems(parsed);
+        }
       }
+    } catch (error) {
+      console.error("Error loading cart:", error);
+      localStorage.removeItem("cart");
     }
   }, []);
 

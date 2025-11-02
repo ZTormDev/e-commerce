@@ -81,8 +81,8 @@ export default function CheckoutPage() {
             </div>
             <h1 className="text-3xl font-bold mb-4">Order Confirmed!</h1>
             <p className="text-gray-600 mb-6">
-              Thank you for your order. We've received your payment and will
-              start processing your order right away.
+              Thank you for your order. We&apos;ve received your payment and
+              will start processing your order right away.
             </p>
             <div className="bg-gray-50 rounded-lg p-6 mb-6">
               <p className="text-sm text-gray-600 mb-2">Order Number</p>
